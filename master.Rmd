@@ -24,6 +24,19 @@ library(tidyverse)
 library(reshape2)
 library(readr)
 library(ggplot2)
+library(foreign)
+
+```
+
+## 2. Load data to R
+
+```{r}
+
+data_raw <- read.dta("./ZA7500_v3-0-0.dta/ZA7500_v3-0-0.dta")
+
+head(data_raw)
+
+
 
 ```
 
