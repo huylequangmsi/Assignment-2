@@ -86,7 +86,6 @@ data_final <- data_raw %>%
 
 head(data_final)
 
-nrow(data_final)
 
 table(data_final$country)
 table(data_final$working_mom)
@@ -95,8 +94,10 @@ table(data_final$immigrant_job)
 summary(data_final$age)
 table(data_final$male)
 table(data_final$education)
+summary(data_final$education_fct)
 
-view(data_final)
+save(data_final, file = "data_final.RData")
+
 
 ```
 
