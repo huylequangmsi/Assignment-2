@@ -21,8 +21,6 @@ getwd()
 ## Load necessary packages
 
 library(tidyverse)
-library(reshape2)
-library(readr)
 library(ggplot2)
 library(foreign)
 
@@ -33,10 +31,47 @@ library(foreign)
 ```{r}
 
 data_raw <- read.dta("./ZA7500_v3-0-0.dta/ZA7500_v3-0-0.dta")
-
 head(data_raw)
+nrow(data_raw)
 
 
+```
+
+## 3. Clean and save new dataset
+
+```{r}
+
+# select variables of interest
+
+vars <- c("country", "v72", "v80", "age", "v225", "v243_r")
+
+data_final <- data_raw %>% 
+    select(vars) %>% 
+    filter(age >=0) %>% 
+    filter(v72 == "agree strongly"|v72 == "agree"|
+               v72 == "disagree"|v72 == "disagree strongly") %>% 
+    filter(v80 == "agree strongly"|v80 == "agree"|v80 == "neither agree nor disagree"|
+               v80 == "disagree"|v80 == "disagree strongly") %>% 
+    filter(v225 == "male"|v225 == "female") %>% 
+    filter(v243_r == "lower"|v243_r == "medium"|v243_r == "higher") %>% 
+    rename(working_mom = v72,
+           immigrant_job = v80,
+           male = v225,
+           education = v243_r) %>% 
+    mutate(male = ifelse(male == "male", 1, 0),
+           working_mom = as.numeric(working_mom),
+           immigrant_job = as.numeric(immigrant_job))
+
+head(data_final)
+
+nrow(data_final)
+
+table(data_final$country)
+table(data_final$working_mom)
+table(data_final$immigrant_job)
+summary(data_final$age)
+summary(data_final$male)
+summary(data_final$education)
 
 ```
 
