@@ -31,12 +31,6 @@ library(foreign)
 ```{r}
 
 data_raw <- read.dta("./ZA7500_v3-0-0.dta/ZA7500_v3-0-0.dta")
-head(data_raw)
-nrow(data_raw)
-
-table(data_raw$v72)
-table(data_raw$v80)
-table(data_raw$v243_r)
 
 ```
 
@@ -61,6 +55,8 @@ data_final <- data_raw %>%
            immigrant_job = as.numeric(v80),
            education = as.numeric(v243_r),
            male = ifelse(v225 == "male", 1, 0),
+           male = factor(male,
+                         labels = c("Female", "Male")),
            working_mom_fct = factor(working_mom,
                                     labels = c("agree strongly", "agree", 
                                                "disagree","disagree strongly")),
@@ -84,17 +80,7 @@ data_final <- data_raw %>%
     
           
 
-head(data_final)
-
-
-table(data_final$country)
-table(data_final$working_mom)
-table(data_final$working_mom_fct)
-table(data_final$immigrant_job)
-summary(data_final$age)
-table(data_final$male)
-table(data_final$education)
-summary(data_final$education_fct)
+summary(data_final)
 
 save(data_final, file = "data_final.RData")
 
