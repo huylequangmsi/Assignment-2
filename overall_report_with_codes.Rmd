@@ -27,7 +27,7 @@ There are total 52,823 observations, with the average age of around 49.5. The pr
 
 For the first question of interest, 43$%$ participants disagree that children would suffer from a working mother. But for the second question, a higher proportion of people agree that when jobs are scarce, employers should give priority to national people over immigrants (28$%$ agree and 34$%$ agree strongly).
 
-```{r}
+```{r, results='asis'}
 
 # set  working directory
 
@@ -82,10 +82,6 @@ props_tab <- props_tab %>%
 pander(props_tab, 
        caption = "Descriptive statistics of factor variables. Data: EVS 2017")
 
-knitr::kable(props_tab, 
-             caption = 'Descriptive statistics of factor variables. Data: EVS 2017',
-             format = "html")
-
 # make table for continuous variables
 
 cont_var <- list("Age" = 
@@ -94,13 +90,12 @@ cont_var <- list("Age" =
                           "max" = ~ max(explore_data$age),
                           "mean (sd)" = ~ mean_sd(explore_data$age)))
 
-cont_tab <- summary_table(explore_data, cont_var)
-
-knitr::kable(cont_tab,
-             caption = 'Descriptive statistics of Age. Data: EVS 2017',
-             format = "html")
+knitr::kable(summary_table(explore_data, cont_var),
+             row.names = TRUE,
+             caption = "Descriptive statistics of Age. Data: EVS 2017")
 
 ```
+
 ## 3. Graphs
 
 In this section, we will explore how people's attitude towards working mothers and jobs for immigrants changes with age.
@@ -149,21 +144,17 @@ explore_data %>%
 
 ## 4. Empirical analysis
 
-```{r, results='asis', echo = FALSE}
+```{r, results='asis'}
 
 # working mom and age
 
 model_1 <- lm(data = explore_data,
               formula = working_mom ~ age + I(age^2) + male + education_fct)
 
-summary(model_1)
-
 # Immigrant jobs and age
 
 model_2 <- lm(data = explore_data,
               formula = immigrant_job ~ age + I(age^2) + male + education_fct)
-
-summary(model_2)
 
 # make table
 
