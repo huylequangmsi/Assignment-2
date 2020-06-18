@@ -40,6 +40,7 @@ library(ggplot2)
 library(foreign)
 library(pander)
 library(qwraps2)
+library(texreg)
 
 # load data
 
@@ -104,8 +105,9 @@ knitr::kable(cont_tab,
 
 In this section, we will explore how people's attitude towards working mothers and jobs for immigrants changes with age.
 
+Figure 1: Age and the attitude towards working mothers
 
-```{r}
+```{r fig.align='center'}
 
 # Working mom and age
 
@@ -121,7 +123,53 @@ explore_data %>%
          y = "Attitude towards working mothers",
          caption = "Data: EVS 2017")
 
-class(explore_data$working_mom)
+```
+
+
+Figure 2: Age and the attitude towards jobs for immigrants
+
+```{r fig.align='center'}
+
+# Jobs for immigrants and age
+
+explore_data %>% 
+    ggplot(aes(x = age,
+               y = immigrant_job))+
+    stat_summary(fun.y = mean,
+                 geom = "line",
+                 color = "blue")+
+    ylim(1,4)+
+    theme_bw()+
+    labs(x = "Age",
+         y = "Attitude towards jobs for immigrants",
+         caption = "Data: EVS 2017")
+
+```
+
+
+## 4. Empirical analysis
+
+```{r, results='asis', echo = FALSE}
+
+# working mom and age
+
+model_1 <- lm(data = explore_data,
+              formula = working_mom ~ age + I(age^2) + male + education_fct)
+
+summary(model_1)
+
+# Immigrant jobs and age
+
+model_2 <- lm(data = explore_data,
+              formula = immigrant_job ~ age + I(age^2) + male + education_fct)
+
+summary(model_2)
+
+# make table
+
+texreg(list(model_1, model_2),
+        table = F, 
+        use.packages = F)
 
 ```
 
