@@ -21,6 +21,12 @@ In particular, we want to look at if people agree or disagree with these two sta
 
 ## 2. Descriptive statistics
 
+This section presents the descriptive statistics of the variables in our study. First, I show the summary table for categorical variables, and then for a continuous variable. After cleaning, all missing cases are omitted, therefore, we have a balanced dataset. 
+
+There are total 52,823 observations, with the average age of around 49.5. The proportion of each country in the database is quite similar with roughly 3$%$, except for Denmark and Switzerland with 6$%$ each. The percentage of female participants is slightly higher than males with 55$%$. Most of participants have medium education (46$%$).
+
+For the first question of interest, 43$%$ participants disagree that children would suffer from a working mother. But for the second question, a higher proportion of people agree that when jobs are scarce, employers should give priority to national people over immigrants (28$%$ agree and 34$%$ agree strongly).
+
 ```{r}
 
 # set  working directory
@@ -92,6 +98,30 @@ cont_tab <- summary_table(explore_data, cont_var)
 knitr::kable(cont_tab,
              caption = 'Descriptive statistics of Age. Data: EVS 2017',
              format = "html")
+
+```
+## 3. Graphs
+
+In this section, we will explore how people's attitude towards working mothers and jobs for immigrants changes with age.
+
+
+```{r}
+
+# Working mom and age
+
+explore_data %>% 
+    ggplot(aes(x = age,
+               y = working_mom))+
+    stat_summary(fun.y = mean,
+                 geom = "line",
+                 color = "red")+
+    ylim(1,4)+
+    theme_bw()+
+    labs(x = "Age",
+         y = "Attitude towards working mothers",
+         caption = "Data: EVS 2017")
+
+class(explore_data$working_mom)
 
 ```
 
