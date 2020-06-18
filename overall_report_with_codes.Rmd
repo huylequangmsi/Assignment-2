@@ -1,0 +1,78 @@
+---
+title: "Overall report"
+author: "Huy Le Quang"
+date: "6/17/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+## 1. Introduction
+
+The European Value Study (EVS) covers a time span from 1981 to 2017 with a core questionnaire repeated over time on adult population (at least 18 years old at the time of survey) in 33 countries in Europe. The study aims at understanding human values in various topics, namely, life, family, work, region, politics and society. The EVS data is managed by GESIS Leibniz Institute for Social Sciences in Germany, and can be obtained free of charge.
+
+The data used in this report is taken from EVS 2017. In 2017, researchers used a mixed mode data collection. The sample size is approximately 1,200 in each country. This report focuses on analyzing two key questions: 
+- v72: When a mother works for pay, the children suffer.
+- v80: when jobs are scarce, employers should give priority to national people over immigrants.
+
+In particular, we want to look at if people agree or disagree with these two statements, and how it changes with ages. We also present a simple regression model to further investigate the relationship between sex, age, education and the degree that people agree with the statements. 
+
+## 2. Descriptive statistics
+
+```{r}
+
+# set  working directory
+
+setwd ("G:/My Drive/IPSDS/Modern Workflow in Data Science/Assignments/Assignment-2/")
+
+## Load necessary packages
+
+library(tidyverse)
+library(ggplot2)
+library(foreign)
+library(pander)
+
+# load data
+
+load("data_final.RData")
+
+# make smaller data for descriptive:
+
+explore_data <- data_final %>% 
+    select(-v72, -v80, -v225, -v243_r, -education)
+
+# get the type of variables
+
+type_var <- unlist(map(explore_data, class))
+
+# make frequency table
+
+freq_tab <- function(x) {
+    tab <- cbind(Count = table(x, useNA = "always"),
+                 Prop = round(prop.table(table(x, useNA = "always")),2))
+    tab <- as.data.frame(tab) %>% 
+        tbl_df() %>% 
+        mutate(Cat = row.names(tab)) %>% 
+        select(Cat, Count, Prop)
+}
+
+# select only factor variables and make table
+
+props <- map(explore_data[, type_var == "factor"],
+             freq_tab)
+
+
+# get the variable names and put all proportions together
+
+vars <- unlist(map(props, nrow))
+props_tab <- reduce(props, rbind)
+props_tab <- props_tab %>% 
+    mutate(Variable = rep(names(vars), vars))
+
+pander(props_tab, 
+       caption = "Descriptive statistics of factor variables. Data: EVS 2017")
+
+```
+
