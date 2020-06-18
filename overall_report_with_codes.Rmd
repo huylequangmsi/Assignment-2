@@ -102,6 +102,7 @@ In this section, we will explore how people's attitude towards working mothers a
 
 Figure 1: Age and the attitude towards working mothers
 
+
 ```{r fig.align='center'}
 
 # Working mom and age
@@ -122,6 +123,7 @@ explore_data %>%
 
 
 Figure 2: Age and the attitude towards jobs for immigrants
+
 
 ```{r fig.align='center'}
 
@@ -144,6 +146,8 @@ explore_data %>%
 
 ## 4. Empirical analysis
 
+This section presents the results of two regression models. Model 1 investigates the relationship between the attitude towards working mothers and other independent variables: age, sex and education level. Model 2 investigates the relationship between the attitude towards jobs for immigrants and the same independent variables.
+
 ```{r, results='asis'}
 
 # working mom and age
@@ -160,7 +164,10 @@ model_2 <- lm(data = explore_data,
 
 texreg(list(model_1, model_2),
         table = F, 
-        use.packages = F)
+        use.packages = F,
+       digits = 5,
+       caption = "Regression table. Data: EVS 2017")
 
 ```
 
+From the above table, we can see that
