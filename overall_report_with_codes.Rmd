@@ -11,21 +11,24 @@ knitr::opts_chunk$set(warning = FALSE)
 
 ## 1. Introduction
 
-The European Value Study (EVS) covers a time span from 1981 to 2017 with a core questionnaire repeated over time on adult population (at least 18 years old at the time of survey) in 33 countries in Europe. The study aims at understanding human values in various topics, namely, life, family, work, region, politics and society. The EVS data is managed by GESIS Leibniz Institute for Social Sciences in Germany, and can be obtained free of charge.
+The European Value Study (EVS) covers a time span from 1981 to 2017 with a core questionnaire repeated over time on adult population (*at least 18 years old at the time of survey*) in 33 countries in Europe. The study aims at understanding human values in various topics, namely, life, family, work, region, politics and society. The EVS data is managed by GESIS Leibniz Institute for Social Sciences in Germany, and can be obtained free of charge.
 
-The data used in this report is taken from EVS 2017. In 2017, researchers used a mixed mode data collection. The sample size is approximately 1,200 in each country. This report focuses on analyzing two key questions: 
-- v72: When a mother works for pay, the children suffer.
+The data used in this report is taken from **EVS 2017**. In 2017, researchers used a mixed mode data collection. The sample size is approximately 1,200 in each country. This report focuses on analyzing two key questions: 
+
+- v72: when a mother works for pay, the children suffer.
+
 - v80: when jobs are scarce, employers should give priority to national people over immigrants.
 
-In particular, we want to look at if people agree or disagree with these two statements, and how it changes with ages. We also present a simple regression model to further investigate the relationship between sex, age, education and the degree that people agree with the statements. 
+In particular, we want to look at if people agree or disagree with these two statements, and how it changes with ages. We also present a simple regression model to further investigate the relationship between sex, age, education and the degree that people agree with these statements. 
 
 ## 2. Descriptive statistics
 
 This section presents the descriptive statistics of the variables in our study. First, I show the summary table for categorical variables, and then for a continuous variable. After cleaning, all missing cases are omitted, therefore, we have a balanced dataset. 
 
-There are total 52,823 observations, with the average age of around 49.5. The proportion of each country in the database is quite similar with roughly 3$%$, except for Denmark and Switzerland with 6$%$ each. The percentage of female participants is slightly higher than males with 55$%$. Most of participants have medium education (46$%$).
+There are total 52,823 observations, with the average age of around 49.5. The proportion of each country in the database is quite similar with roughly 3\%, except for Denmark and Switzerland with 6\% each. The percentage of female participants is slightly higher than males with 55. Most of participants have medium education (46\%).
 
-For the first question of interest, 43$%$ participants disagree that children would suffer from a working mother. But for the second question, a higher proportion of people agree that when jobs are scarce, employers should give priority to national people over immigrants (28$%$ agree and 34$%$ agree strongly).
+For the first question of interest, 43\% participants disagree that children would suffer from a working mother. But for the second question, a higher proportion of people agree that when jobs are scarce, employers should give priority to national people over immigrants (28\% agree and 34 agree\% strongly).
+
 
 ```{r, results='asis'}
 
@@ -120,6 +123,7 @@ explore_data %>%
          caption = "Data: EVS 2017")
 
 ```
+Figure 1 shows that as age increases, people tend to agree with the statement that children will suffer when a mother works for pay. However, this change in the attitude towards working mothers is very small across different ages.
 
 
 Figure 2: Age and the attitude towards jobs for immigrants
@@ -143,6 +147,9 @@ explore_data %>%
 
 ```
 
+Figure 2 illustrates that the attitude towards jobs for immigrants is quite stable across different ages. The line slightly goes down as age increases show that people tend to agree with the statement that when jobs are scarce, employers should give priority to national people over immigrants. 
+
+Overall, two figures show that as people age, they tend to be less opened to working mothers and immigrants. 
 
 ## 4. Empirical analysis
 
@@ -170,4 +177,8 @@ texreg(list(model_1, model_2),
 
 ```
 
-From the above table, we can see that
+Model 1 shows that as age increases, people tend to agree with the statement that children will suffer when a mother works for pay, *ceteris paribus*, but this increases with a decreasing rate. However, this variable is not statistically significant at any conventional level. Males also tend to agree with this statement. Meanwhile people with higher educational level tend to disagree with the statement. 
+
+In model 2, we see that males or people with higher educational level tend to disagree that when jobs are scarce, employers should give priority to national people over immigrants, than females and people with lower educational level, respectively. 
+
+All in all, older people, males and people with lower educational level tend to be less opened to working mothers and immigrants.
