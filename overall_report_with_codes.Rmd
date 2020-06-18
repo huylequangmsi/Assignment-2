@@ -33,6 +33,7 @@ library(tidyverse)
 library(ggplot2)
 library(foreign)
 library(pander)
+library(qwraps2)
 
 # load data
 
@@ -73,6 +74,24 @@ props_tab <- props_tab %>%
 
 pander(props_tab, 
        caption = "Descriptive statistics of factor variables. Data: EVS 2017")
+
+knitr::kable(props_tab, 
+             caption = 'Descriptive statistics of factor variables. Data: EVS 2017',
+             format = "html")
+
+# make table for continuous variables
+
+cont_var <- list("Age" = 
+                     list("min" = ~ min(explore_data$age),
+                          "median" = ~ median(explore_data$age),
+                          "max" = ~ max(explore_data$age),
+                          "mean (sd)" = ~ mean_sd(explore_data$age)))
+
+cont_tab <- summary_table(explore_data, cont_var)
+
+knitr::kable(cont_tab,
+             caption = 'Descriptive statistics of Age. Data: EVS 2017',
+             format = "html")
 
 ```
 
