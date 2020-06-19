@@ -1,0 +1,181 @@
+---
+title: "Overall report"
+author: "Huy Le Quang"
+date: "6/17/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+## 1. Introduction
+
+The European Value Study (EVS) covers a time span from 1981 to 2017 with a core questionnaire repeated over time on adult population (*at least 18 years old at the time of survey*) in 33 countries in Europe. The study aims at understanding human values in various topics, namely, life, family, work, region, politics and society. The EVS data is managed by GESIS Leibniz Institute for Social Sciences in Germany, and can be obtained free of charge.
+
+The data used in this report is taken from **EVS 2017**. In 2017, researchers used a mixed mode data collection. The sample size is approximately 1,200 in each country. This report focuses on analyzing two key questions: 
+
+- v72: when a mother works for pay, the children suffer.
+
+- v80: when jobs are scarce, employers should give priority to national people over immigrants.
+
+In particular, we want to look at if people agree or disagree with these two statements, and how it changes with ages. We also present a simple regression model to further investigate the relationship between sex, age, education and the degree that people agree with these statements. 
+
+## 2. Descriptive statistics
+
+This section presents the descriptive statistics of the variables in our study. First, I show the summary table for categorical variables, and then for a continuous variable. After cleaning, all missing cases are omitted, therefore, we have a balanced dataset. 
+
+There are total 52,823 observations, with the average age of around 49.5. The proportion of each country in the database is quite similar with roughly 3\%, except for Denmark and Switzerland with 6\% each and no observation in Greece. The percentage of female participants is slightly higher than males with 55. Most of participants have medium education (46\%).
+
+For the first question of interest, 43\% participants disagree that children would suffer from a working mother. But for the second question, a higher proportion of people agree that when jobs are scarce, employers should give priority to national people over immigrants (28\% agree and 34\% agree strongly).
+
+
+```{r, results='asis', echo=FALSE, message=FALSE}
+
+# set  working directory
+
+setwd ("G:/My Drive/IPSDS/Modern Workflow in Data Science/Assignments/Assignment-2/")
+
+## Load necessary packages
+
+library(tidyverse)
+library(ggplot2)
+library(foreign)
+library(pander)
+library(qwraps2)
+library(texreg)
+
+# load data
+
+load("data_final.RData")
+
+# make smaller data for descriptive:
+
+explore_data <- data_final %>% 
+    select(-v72, -v80, -v225, -v243_r, -education)
+
+# get the type of variables
+
+type_var <- unlist(map(explore_data, class))
+
+# make frequency table
+
+freq_tab <- function(x) {
+    tab <- cbind(Count = table(x, useNA = "always"),
+                 Prop = round(prop.table(table(x, useNA = "always")),2))
+    tab <- as.data.frame(tab) %>% 
+        tbl_df() %>% 
+        mutate(Cat = row.names(tab)) %>% 
+        select(Cat, Count, Prop)
+}
+
+# select only factor variables and make table
+
+props <- map(explore_data[, type_var == "factor"],
+             freq_tab)
+
+
+# get the variable names and put all proportions together
+
+vars <- unlist(map(props, nrow))
+props_tab <- reduce(props, rbind)
+props_tab <- props_tab %>% 
+    mutate(Variable = rep(names(vars), vars))
+
+pander(props_tab, 
+       caption = "Descriptive statistics of factor variables. Data: EVS 2017")
+
+# make table for continuous variables
+
+cont_var <- list("Age" = 
+                     list("min" = ~ min(explore_data$age),
+                          "median" = ~ median(explore_data$age),
+                          "max" = ~ max(explore_data$age),
+                          "mean (sd)" = ~ mean_sd(explore_data$age)))
+
+knitr::kable(summary_table(explore_data, cont_var),
+             row.names = TRUE,
+             caption = "Descriptive statistics of Age. Data: EVS 2017")
+
+```
+
+## 3. Graphs
+
+In this section, we will explore how people's attitude towards working mothers and jobs for immigrants changes with age.
+
+
+```{r fig.align='center', echo=FALSE}
+
+# Working mom and age
+
+explore_data %>% 
+    ggplot(aes(x = age,
+               y = working_mom))+
+    stat_summary(fun.y = mean,
+                 geom = "line",
+                 color = "red")+
+    ylim(1,4)+
+    theme_bw()+
+    labs(x = "Age",
+         y = "Attitude towards working mothers",
+         caption = "Figure 1: Age and the attitude towards working mothers. Data: EVS 2017")
+
+```
+Figure 1 shows that as age increases, people tend to agree with the statement that children will suffer when a mother works for pay. However, this change in the attitude towards working mothers is very small across different ages.
+
+
+
+```{r fig.align='center', echo=FALSE}
+
+# Jobs for immigrants and age
+
+explore_data %>% 
+    ggplot(aes(x = age,
+               y = immigrant_job))+
+    stat_summary(fun.y = mean,
+                 geom = "line",
+                 color = "blue")+
+    ylim(1,4)+
+    theme_bw()+
+    labs(x = "Age",
+         y = "Attitude towards jobs for immigrants",
+         caption = "Figure 2: Age and the attitude towards jobs for immigrants. Data: EVS 2017")
+
+```
+
+Figure 2 illustrates that the attitude towards jobs for immigrants is quite stable across different ages. The line slightly goes down as age increases shows that people tend to agree with the statement that when jobs are scarce, employers should give priority to national people over immigrants. 
+
+Overall, two figures show that as people age, they tend to be less opened to working mothers and immigrants. 
+
+## 4. Empirical analysis
+
+This section presents the results of two regression models. Model 1 investigates the relationship between the attitude towards working mothers and other independent variables: age, sex and education level. Model 2 investigates the relationship between the attitude towards jobs for immigrants and the same independent variables.
+
+```{r, results='asis', echo=FALSE}
+
+# working mom and age
+
+model_1 <- lm(data = explore_data,
+              formula = working_mom ~ age + I(age^2) + male + education_fct)
+
+# Immigrant jobs and age
+
+model_2 <- lm(data = explore_data,
+              formula = immigrant_job ~ age + I(age^2) + male + education_fct)
+
+# make table
+
+texreg(list(model_1, model_2),
+        table = F, 
+        use.packages = F,
+       center = T,
+       digits = 5,
+       label = "Regression table. Data: EVS 2017")
+
+```
+
+Model 1 shows that as age increases, people tend to agree with the statement that children will suffer when a mother works for pay, *ceteris paribus*, but this increases with a decreasing rate. However, this variable is not statistically significant at any conventional level. Males also tend to agree with this statement. Meanwhile people with higher educational level tend to disagree with the statement. 
+
+In model 2, we see that males or people with higher educational level tend to disagree that when jobs are scarce, employers should give priority to national people over immigrants, than females and people with lower educational level, respectively. 
+
+All in all, older people and people with lower educational level tend to be less opened to working mothers and immigrants.
