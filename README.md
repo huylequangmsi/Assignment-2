@@ -14,7 +14,7 @@ The repository consists of four Rmarkdown files:
 
 - overall_report_without_codes: to analyze overall data and produce a PDF file without codes for policy makers
 
-- country_report: to analyze data at country level and produce a html file
+- country_report: to analyze data at country level and produce a html file (this is stored in the folder batch_reports)
 
 Besides, the repository also includes an Overall_report_output folder to store overall reports PDF files and batch_reports folder to store all country report html files.
 
