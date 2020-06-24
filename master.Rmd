@@ -85,6 +85,22 @@ summary(data_final)
 
 save(data_final, file = "data_final.RData")
 
+# make smaller data for descriptive:
+
+explore_data <- data_final %>% 
+    select(-v72, -v80, -v225, -v243_r, -education)
 
 ```
 
+
+```{r}
+
+# Function for batch creation
+
+for (country in unique(explore_data$country)) {
+   rmarkdown::render('./batch_reports/country_report.Rmd', 
+        params = list(country = country),
+        output_file = paste0("Report-", country, ".html"))
+}
+
+```
