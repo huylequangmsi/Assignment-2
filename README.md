@@ -4,11 +4,11 @@ Modern Workflow in Data Science - Assignment-2
 
 ## Introduction
 
-This repository is created for the Assignment 2 of the Modern Workflow in Data Science. The project aims at investigating people's attitude towards working mothers and jobs for immigrants. The dataset used in this project is the European Value Study 2017 (**EVS 2017**).
+This repository is created for the Assignment 2 of the Modern Workflow in Data Science. The project aims at investigating people's attitude towards working mothers and jobs for immigrants. The dataset used in this project is the European Value Study 2017 (**EVS 2017**). The dataset can be obtained from [this website](https://search.gesis.org/research_data/ZA7500).
 
 The repository consists of four Rmarkdown files:
 
-- master: to import and clean data
+- master: to import, clean data and make batch reports
 
 - overall_report_with_codes: to analyze overall data and produce a PDF file with codes for statisticians
 
@@ -16,7 +16,7 @@ The repository consists of four Rmarkdown files:
 
 - country_report: to analyze data at country level and produce a html file
 
-Besides, the repository also includes an output folder to store all PDF files. 
+Besides, the repository also includes an Overall_report_output folder to store overall reports PDF files and batch_reports folder to store all country report html files.
 
 
 ## Session Information
