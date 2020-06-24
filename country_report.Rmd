@@ -1,0 +1,178 @@
+---
+title: Country report
+author: "Huy Le Quang"
+date: "6/21/2020"
+output: html_document
+params:
+    country: Germany
+    data: explore_data
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE)
+```
+
+# Report on `r params$country`
+
+## 1. Introduction
+
+The European Value Study (EVS) covers a time span from 1981 to 2017 with a core questionnaire repeated over time on adult population (*at least 18 years old at the time of survey*) in 33 countries in Europe. The study aims at understanding human values in various topics, namely, life, family, work, region, politics and society. The EVS data is managed by GESIS Leibniz Institute for Social Sciences in Germany, and can be obtained free of charge.
+
+The data used in this report is taken from **EVS 2017**. This report focuses on analyzing two key questions: 
+
+- v72: when a mother works for pay, the children suffer.
+
+- v80: when jobs are scarce, employers should give priority to national people over immigrants.
+
+In particular, we want to look at if people agree or disagree with these two statements, and how it changes with ages. We also present a simple regression model to further investigate the relationship between sex, age, education and the degree that people agree with these statements. 
+
+The country report will focus on answering these question at the country level.
+
+## 2. Descriptive statistics
+
+This section presents the descriptive statistics of the variables in our study. The table below provides the summary statistics for the variables in the dataset of **`r params$country`**.
+
+
+```{r, results='asis', message=FALSE, echo=FALSE}
+
+# set  working directory
+
+setwd ("G:/My Drive/IPSDS/Modern Workflow in Data Science/Assignments/Assignment-2/")
+
+## Load necessary packages
+
+library(tidyverse)
+library(ggplot2)
+library(foreign)
+library(pander)
+library(qwraps2)
+library(texreg)
+library(shiny)
+library(kableExtra)
+
+# load data
+
+load("data_final.RData")
+
+# make smaller data for descriptive:
+
+explore_data <- data_final %>% 
+    select(-v72, -v80, -v225, -v243_r, -education)
+
+```
+
+```{r, results='asis', message=FALSE, echo=FALSE}
+
+# Descriptive statistics 
+
+knitr::kable((summary(explore_data %>% 
+            select(-working_mom_fct, -immigrant_job_fct) %>% 
+            filter(country == params$country))),
+            caption = "Descriptive statistics. Data: EVS 2017")%>%
+  kable_styling(bootstrap_options = c("striped", "condensed"), position = "center", font_size = 11)
+
+```
+
+
+## 3. Graphs
+
+In this section, we will explore how people's attitude towards working mothers and jobs for immigrants changes with age in **`r params$country`**.
+
+
+```{r fig.align='center', echo=FALSE}
+
+explore_data %>% 
+    filter(country == params$country) %>% 
+    ggplot(aes(x = age,
+               y = working_mom))+
+    stat_summary(fun.y = mean,
+                 geom = "line",
+                 color = "red")+
+    ylim(1,4)+
+    theme_bw()+
+    labs(x = "Age",
+         y = "Attitude towards working mothers",
+         caption = "Figure 1: Age and the attitude towards working mothers. Data: EVS 2017")
+
+```
+
+```{r fig.align='center', echo=FALSE}
+
+# Jobs for immigrants and age
+
+explore_data %>% 
+    filter(country == params$country) %>% 
+    ggplot(aes(x = age,
+               y = immigrant_job))+
+    stat_summary(fun.y = mean,
+                 geom = "line",
+                 color = "blue")+
+    ylim(1,4)+
+    theme_bw()+
+    labs(x = "Age",
+         y = "Attitude towards jobs for immigrants",
+         caption = "Figure 2: Age and the attitude towards jobs for immigrants. Data: EVS 2017")
+```
+
+
+## 4. Empirical analysis
+
+
+This section presents the results of two regression models. Model 1 investigates the relationship between the attitude towards working mothers and other independent variables: age, sex and education level. Model 2 investigates the relationship between the attitude towards jobs for immigrants and the same independent variables.
+
+```{r, results='asis', echo=FALSE}
+
+# working mom and age
+
+model_1 <- lm(data = explore_data %>% filter(country == params$country),
+              formula = working_mom ~ age + I(age^2) + male + education_fct)
+
+beta_model1 <- coef(model_1)
+sign_beta_model1 <- ifelse(beta_model1[4] > 0,"positive","negative")
+
+p.value_model1 <- summary(model_1)$coefficients[4,4]
+sig_p.value_model1 <- ifelse(p.value_model1 <=0.05, "statistically significant",
+                             "not statistically significant")
+
+
+# Immigrant jobs and age
+
+model_2 <- lm(data = explore_data %>% filter(country == params$country),
+              formula = immigrant_job ~ age + I(age^2) + male + education_fct)
+beta_model2 <- coef(model_2)
+sign_beta_model2 <- ifelse(beta_model2[4] > 0,"positive","negative")
+
+p.value_model2 <- summary(model_2)$coefficients[4,4]
+sig_p.value_model2 <- ifelse(p.value_model2 <=0.05, "statistically significant",
+                             "not statistically significant")
+
+# make table
+
+htmlreg(list(model_1, model_2),
+        doctype = F,
+        inline.css = F,
+       digits = 5,
+       center = TRUE,
+       star.symbol = "*",
+       caption = "Regression table. Data: EVS 2017")
+
+
+```
+
+
+
+
+- Model 1:
+
+The coefficient of the variable sex (being males) is **`r beta_model1[4]`**. 
+
+This variable is **`r sign_beta_model1`** and **`r sig_p.value_model1`** (p-value = `r p.value_model1`).
+
+
+- Model 2:
+
+The coefficient of the variable sex (being males) is **`r beta_model2[4]`**. 
+
+This variable is **`r sign_beta_model2`** and **`r sig_p.value_model2`** (p-value = `r p.value_model2`).
+
+
